@@ -364,6 +364,44 @@ export default function Home() {
               <p style={{ color: 'var(--muted-foreground)', lineHeight: 1.7, margin: 0 }}>
                 Next: expert algorithm reviews, adversarial testing, and privacy-first research. Our ambition is to help tackle India&apos;s mule account crisis at a national scale.
               </p>
+              <div style={{ marginTop: '0.5rem' }}>
+                <a
+                  href="/Finomaly_Biometric_1000_Experiment_Report.pdf"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.625rem',
+                    padding: '0.75rem 1.25rem',
+                    borderRadius: 10,
+                    border: '1px solid rgba(0, 245, 212, 0.4)',
+                    background: 'rgba(0, 245, 212, 0.08)',
+                    color: '#00f5d4',
+                    fontSize: '0.85rem',
+                    fontWeight: 600,
+                    fontFamily: 'JetBrains Mono, monospace',
+                    textDecoration: 'none',
+                    transition: 'all 0.2s ease',
+                  }}
+                  onMouseEnter={e => {
+                    e.currentTarget.style.background = 'rgba(0, 245, 212, 0.18)';
+                    e.currentTarget.style.borderColor = 'rgba(0, 245, 212, 0.7)';
+                  }}
+                  onMouseLeave={e => {
+                    e.currentTarget.style.background = 'rgba(0, 245, 212, 0.08)';
+                    e.currentTarget.style.borderColor = 'rgba(0, 245, 212, 0.4)';
+                  }}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                    <polyline points="14 2 14 8 20 8" />
+                    <line x1="12" y1="18" x2="12" y2="12" />
+                    <polyline points="9 15 12 18 15 15" />
+                  </svg>
+                  Read 1,000-Experiment Research Report (PDF)
+                </a>
+              </div>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 0 }}>
               {[
