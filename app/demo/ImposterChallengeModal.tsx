@@ -43,8 +43,7 @@ export default function ImposterChallengeModal() {
     setResult(null);
   };
 
-  const onBaselineComplete = useCallback((vector: RawVector) => {
-    const sessions = [vector];
+  const onBaselineComplete = useCallback((sessions: RawVector[]) => {
     // Intentionally NOT saving to localStorage so it's one-time use
     setBaselineSessions(sessions);
     setTimeout(() => setPhase('login'), 300);

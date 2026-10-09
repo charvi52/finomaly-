@@ -12,42 +12,36 @@ import {
   extractRawVector,
 } from './biometrics';
 
-// ── Long baseline paragraph (allows up to 220+ words for maximum accuracy) ────
-const BASELINE_PARAGRAPH =
-  'The internet was originally developed as a decentralized communication network. ' +
-  'Over several decades it evolved from a small academic experiment into a global infrastructure ' +
-  'connecting billions of people. Today it underpins commerce, communication, and knowledge sharing ' +
-  'across every nation on the planet. Machine learning enables computers to learn patterns from data ' +
-  'without being explicitly programmed. Algorithms trained on large datasets can recognize images, ' +
-  'translate languages, and even detect fraud in financial transactions. Behavioral biometrics studies ' +
-  'uniquely identifying patterns in human activity. Unlike physical biometrics such as fingerprints, ' +
-  'behavioral signals like typing rhythm evolve continuously and are very difficult to replicate or steal. ' +
-  'Cryptography remains the fundamental science of securing digital communication through mathematical algorithms, ' +
-  'ensuring privacy and trust across open networks. When behavioral telemetry is combined with standard authentication, ' +
-  'financial systems can continuously verify identity in the background without interrupting legitimate users. ' +
-  'Every individual develops distinctive physical habits when interacting with keyboards and touchscreens over time, ' +
-  'creating an invisible signature that remains uniquely their own.';
+// ── 3 Baseline Passages ──────────────────────────────────────────────────────
+const BASELINE_PASSAGES = [
+  'The internet was originally developed as a decentralized communication network. Over several decades it evolved from a small academic experiment into a global infrastructure connecting billions of people across every nation on the planet.',
+  'Machine learning enables computers to learn patterns from data without being explicitly programmed. Algorithms trained on large datasets can recognize images, translate languages, and detect fraud in financial transactions.',
+  'Behavioral biometrics studies uniquely identifying patterns in human activity. Unlike physical biometrics such as fingerprints, behavioral signals like typing rhythm evolve continuously and remain uniquely your own.',
+];
 
-const MIN_WORDS = 50;
+const MIN_WORDS = 20;
 
 const LOCK_STEPS = [
-  'Extracting keystroke vectors',
+  'Extracting keystroke vectors (S1–S3)',
   'Normalizing feature dimensions',
   'Computing behavioral centroid',
   'Locking behavioral model',
 ];
 
 interface Props {
-  onComplete: (vector: RawVector) => void;
+  onComplete: (sessions: RawVector[]) => void;
 }
 
 export default function BaselineSession({ onComplete }: Props) {
+  const [currentSessionIndex, setCurrentSessionIndex] = useState(0);
   const [typed, setTyped] = useState('');
   const [hasBackspace, setHasBackspace] = useState(false);
   const [isLocking, setIsLocking] = useState(false);
   const [isPasted, setIsPasted] = useState(false);
   const [lockStep, setLockStep] = useState(-1);
   const [locked, setLocked] = useState(false);
+
+  const collectedVectorsRef = useRef<RawVector[]>([]);
 
   // Keystroke tracking refs
   const downMap = useRef(new Map<string, number>());
@@ -60,7 +54,9 @@ export default function BaselineSession({ onComplete }: Props) {
 
   useEffect(() => {
     setTimeout(() => textareaRef.current?.focus(), 150);
-  }, []);
+  }, [currentSessionIndex]);
+
+  const currentPassage = BASELINE_PASSAGES[currentSessionIndex];
 
   // Derived metrics
   const wc = wordCount(typed);
@@ -78,6 +74,17 @@ export default function BaselineSession({ onComplete }: Props) {
     : 0;
 
   const { label: accLabel, color: accColor } = accuracyLabel(accuracy);
+
+  const resetSessionRefs = () => {
+    setTyped('');
+    setHasBackspace(false);
+    downMap.current.clear();
+    keystrokesRef.current = [];
+    flightsRef.current = [];
+    lastKeyRef.current = null;
+    lastUpTimeRef.current = null;
+    startTimeRef.current = null;
+  };
 
   const onKeyDown = useCallback((e: React.KeyboardEvent) => {
     const { key } = e;
@@ -118,29 +125,41 @@ export default function BaselineSession({ onComplete }: Props) {
 
   const handleSubmit = useCallback(() => {
     if (!canSubmit) return;
-    setIsLocking(true);
-    let step = 0;
-    const interval = setInterval(() => {
-      setLockStep(step);
-      step++;
-      if (step >= LOCK_STEPS.length) {
-        clearInterval(interval);
-        setLocked(true);
-        setTimeout(() => {
-          const totalMs = startTimeRef.current
-            ? performance.now() - startTimeRef.current
-            : 3000;
-          const vector = extractRawVector({
-            keystrokes: keystrokesRef.current,
-            flights: flightsRef.current,
-            totalDurationMs: totalMs,
-            charCount: typed.length,
-          });
-          onComplete(vector);
-        }, 600);
-      }
-    }, 420);
-  }, [canSubmit, typed, onComplete]);
+
+    const totalMs = startTimeRef.current
+      ? performance.now() - startTimeRef.current
+      : 3000;
+    const vector = extractRawVector({
+      keystrokes: keystrokesRef.current,
+      flights: flightsRef.current,
+      totalDurationMs: totalMs,
+      charCount: typed.length,
+    });
+
+    const newVectors = [...collectedVectorsRef.current, vector];
+    collectedVectorsRef.current = newVectors;
+
+    if (currentSessionIndex < 2) {
+      // Advance to next session
+      resetSessionRefs();
+      setCurrentSessionIndex(prev => prev + 1);
+    } else {
+      // 3 sessions complete - lock model
+      setIsLocking(true);
+      let step = 0;
+      const interval = setInterval(() => {
+        setLockStep(step);
+        step++;
+        if (step >= LOCK_STEPS.length) {
+          clearInterval(interval);
+          setLocked(true);
+          setTimeout(() => {
+            onComplete(collectedVectorsRef.current);
+          }, 600);
+        }
+      }, 420);
+    }
+  }, [canSubmit, typed, currentSessionIndex, onComplete]);
 
   // ── Loading state ────────────────────────────────────────────────────────
   if (isPasted) {
@@ -160,7 +179,7 @@ export default function BaselineSession({ onComplete }: Props) {
         <button
           onClick={() => {
             setIsPasted(false);
-            setTyped('');
+            resetSessionRefs();
           }}
           style={{
             padding: '0.875rem 1.5rem', borderRadius: 8,
@@ -201,7 +220,7 @@ export default function BaselineSession({ onComplete }: Props) {
             }} className="spinner" />
           )}
           <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '0.88rem', color: '#00f5d4', margin: 0 }}>
-            {locked ? 'BASELINE LOCKED' : 'TRAINING BEHAVIORAL MODEL…'}
+            {locked ? 'BASELINE MODEL LOCKED (3 SESSIONS)' : 'TRAINING BEHAVIORAL MODEL…'}
           </p>
         </div>
 
@@ -239,10 +258,32 @@ export default function BaselineSession({ onComplete }: Props) {
 
   return (
     <div style={{ padding: '1.5rem' }} className="fade-in">
+      {/* Session progress indicator */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem', borderBottom: '1px solid rgba(0,245,212,0.15)', paddingBottom: '0.625rem' }}>
+        <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '0.78rem', color: '#00f5d4', fontWeight: 600, letterSpacing: '0.04em' }}>
+          SESSION {currentSessionIndex + 1} OF 3 — BASELINE ENROLLMENT
+        </span>
+        <div style={{ display: 'flex', gap: '0.35rem' }}>
+          {[0, 1, 2].map((idx) => (
+            <div
+              key={idx}
+              style={{
+                width: 10,
+                height: 10,
+                borderRadius: '50%',
+                background: idx < currentSessionIndex ? '#00f5d4' : idx === currentSessionIndex ? 'rgba(0,245,212,0.5)' : '#1a2628',
+                border: idx === currentSessionIndex ? '1.5px solid #00f5d4' : 'none',
+                transition: 'all 0.3s',
+              }}
+            />
+          ))}
+        </div>
+      </div>
+
       {/* Header info */}
       <div style={{ marginBottom: '1rem' }}>
         <p style={{ fontSize: '0.82rem', color: 'var(--muted-foreground)', margin: '0 0 0.375rem' }}>
-          Type as much of this passage as you like — naturally, at your own pace:
+          Type passage {currentSessionIndex + 1} naturally at your own pace:
         </p>
         <div style={{
           background: 'rgba(0,245,212,0.04)',
@@ -257,7 +298,7 @@ export default function BaselineSession({ onComplete }: Props) {
           maxHeight: 120,
           overflowY: 'auto',
         }}>
-          {BASELINE_PARAGRAPH}
+          {currentPassage}
         </div>
       </div>
 
@@ -273,12 +314,12 @@ export default function BaselineSession({ onComplete }: Props) {
           e.preventDefault();
           setIsPasted(true);
         }}
-        placeholder="Start typing the passage above…"
+        placeholder={`Start typing passage ${currentSessionIndex + 1} above…`}
         autoComplete="off"
         autoCorrect="off"
         autoCapitalize="off"
         spellCheck={false}
-        rows={5}
+        rows={4}
         style={{
           width: '100%',
           resize: 'none',
@@ -311,7 +352,7 @@ export default function BaselineSession({ onComplete }: Props) {
         </span>
       </div>
 
-      {/* Accuracy meter — only shown once minimum words reached */}
+      {/* Accuracy meter */}
       {canSubmit && (
         <div className="fade-in" style={{
           marginTop: '1rem',
@@ -323,7 +364,6 @@ export default function BaselineSession({ onComplete }: Props) {
           alignItems: 'center',
           gap: '1rem',
         }}>
-          {/* Mini accuracy ring */}
           <svg width="68" height="68" viewBox="0 0 68 68" style={{ flexShrink: 0 }}>
             <circle cx="34" cy="34" r={R} className="accuracy-ring-track" />
             <circle
@@ -348,17 +388,15 @@ export default function BaselineSession({ onComplete }: Props) {
 
           <div style={{ flex: 1 }}>
             <p style={{ margin: 0, fontFamily: 'JetBrains Mono, monospace', fontSize: '0.72rem', color: accColor, fontWeight: 600 }}>
-              BASELINE ACCURACY
+              SESSION {currentSessionIndex + 1} ACCURACY
             </p>
             <p style={{ margin: '0.2rem 0 0', fontSize: '0.82rem', color: 'var(--foreground)', fontWeight: 500 }}>
               {accLabel}
             </p>
             <p style={{ margin: '0.25rem 0 0', fontSize: '0.75rem', color: 'var(--muted-foreground)', lineHeight: 1.4 }}>
-              {accuracy < 75
-                ? `Keep typing — more words improve accuracy. ${wc} words captured so far.`
-                : accuracy < 88
-                ? `Good baseline captured. Typing more will improve precision further.`
-                : `Excellent baseline! Your typing is consistent — this gives the best authentication results.`}
+              {currentSessionIndex < 2
+                ? `Session ${currentSessionIndex + 1} complete. Click below to continue to Session ${currentSessionIndex + 2}.`
+                : `Final session complete! Ready to train and lock your 3-session behavioral centroid.`}
             </p>
           </div>
         </div>
@@ -375,7 +413,7 @@ export default function BaselineSession({ onComplete }: Props) {
           fontSize: '0.78rem',
           color: '#ff6b35',
         }}>
-          Backspace detected — this reduces baseline accuracy slightly. Type naturally without correcting.
+          Backspace detected — type naturally without correcting for optimal telemetry.
         </div>
       )}
 
@@ -408,13 +446,18 @@ export default function BaselineSession({ onComplete }: Props) {
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
           <path d="M20 6 9 17l-5-5" />
         </svg>
-        {canSubmit ? `Lock Baseline — ${accuracy}% accuracy` : `Type at least ${MIN_WORDS} words to continue`}
+        {canSubmit
+          ? currentSessionIndex < 2
+            ? `Complete Session ${currentSessionIndex + 1} of 3 →`
+            : `Lock 3-Session Baseline (${accuracy}% accuracy)`
+          : `Type at least ${MIN_WORDS} words to complete Session ${currentSessionIndex + 1}`}
       </button>
 
       <p style={{ marginTop: '0.875rem', fontSize: '0.73rem', color: '#6b7e83', lineHeight: 1.5 }}>
-        Type naturally — do not rush or slow down. The more you type, the more accurate your behavioral signature becomes.{' '}
-        <strong style={{ color: '#f0f4f5' }}>50 words minimum</strong> to unlock, more is better.
+        Session {currentSessionIndex + 1} of 3. Type naturally at your normal speed.{' '}
+        <strong style={{ color: '#f0f4f5' }}>{MIN_WORDS} words minimum</strong> per session.
       </p>
     </div>
   );
 }
+

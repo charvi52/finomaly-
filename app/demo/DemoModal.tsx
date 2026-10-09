@@ -60,8 +60,7 @@ export default function DemoModal() {
 
   const close = () => setOpen(false);
 
-  const onBaselineComplete = useCallback((vector: RawVector) => {
-    const sessions = [vector]; // single session baseline
+  const onBaselineComplete = useCallback((sessions: RawVector[]) => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify({ v: 4, sessions }));
     } catch {}
