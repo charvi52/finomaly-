@@ -666,14 +666,56 @@ export default function HowItWorksAnimation() {
     <>
       <button
         onClick={handleOpen}
-        style={{ background: 'transparent', border: 'none', color: 'var(--muted-foreground)', fontSize: '0.875rem', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 6, padding: 0, fontFamily: 'inherit' }}
-        onMouseEnter={e => (e.currentTarget.style.color = 'var(--foreground)')}
-        onMouseLeave={e => (e.currentTarget.style.color = 'var(--muted-foreground)')}
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: 14,
+          padding: '0.85rem 1.4rem',
+          borderRadius: 14,
+          border: '1px solid rgba(0, 245, 212, 0.35)',
+          background: 'rgba(8, 20, 23, 0.85)',
+          backdropFilter: 'blur(12px)',
+          color: '#ffffff',
+          cursor: 'pointer',
+          boxShadow: '0 8px 32px rgba(0, 245, 212, 0.12)',
+          transition: 'all 0.25s ease',
+        }}
+        onMouseEnter={e => {
+          e.currentTarget.style.borderColor = 'rgba(0, 245, 212, 0.7)';
+          e.currentTarget.style.boxShadow = '0 8px 32px rgba(0, 245, 212, 0.25)';
+          e.currentTarget.style.transform = 'translateY(-2px)';
+        }}
+        onMouseLeave={e => {
+          e.currentTarget.style.borderColor = 'rgba(0, 245, 212, 0.35)';
+          e.currentTarget.style.boxShadow = '0 8px 32px rgba(0, 245, 212, 0.12)';
+          e.currentTarget.style.transform = 'translateY(0)';
+        }}
       >
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <circle cx="12" cy="12" r="10"/><path d="m10 8 6 4-6 4V8z"/>
-        </svg>
-        See how it actually works
+        <span style={{
+          width: 38,
+          height: 38,
+          borderRadius: '50%',
+          background: 'rgba(0, 245, 212, 0.15)',
+          border: '1.5px solid #00f5d4',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: '#00f5d4',
+          flexShrink: 0,
+          boxShadow: '0 0 12px rgba(0, 245, 212, 0.3)',
+        }}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="#00f5d4" stroke="#00f5d4" strokeWidth="2">
+            <polygon points="5 3 19 12 5 21 5 3" />
+          </svg>
+        </span>
+        <div style={{ textAlign: 'left' }}>
+          <div style={{ fontWeight: 700, fontSize: '0.95rem', color: '#ffffff', letterSpacing: '-0.01em' }}>
+            See how it actually works
+          </div>
+          <div style={{ fontSize: '0.75rem', color: '#00f5d4', fontFamily: 'JetBrains Mono, monospace', marginTop: '2px', display: 'flex', alignItems: 'center', gap: 4 }}>
+            Interactive 30-sec simulation ⚡
+          </div>
+        </div>
       </button>
 
       {open && (
