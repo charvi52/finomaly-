@@ -404,6 +404,10 @@ export default function Home() {
               a="No. Scripts and bots type with unnatural, mathematical perfection—such as 0ms hold times or identical key intervals. Finomaly's similarity engine flags these rigid patterns as zero-telemetry anomalies."
             />
             <FaqItem
+              q="Can I update my typing baseline?"
+              a="Yes. In a production deployment, your baseline can be refreshed every six months or whenever your typing habits change noticeably. A new baseline is only created after you pass strong verification (such as an OTP or step-up authentication), so no one else can overwrite your profile."
+            />
+            <FaqItem
               q="What happens if I'm tired or typing faster?"
               a="The prototype uses three similarity bands: 85–100% is a match; 65–84% is a rushed state that does not block the demo; below 65% is a behavioral anomaly. These are illustrative thresholds, not clinically or financially validated measures."
             />
