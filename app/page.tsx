@@ -396,8 +396,12 @@ export default function Home() {
           </div>
           <div>
             <FaqItem
-              q="Does Finomaly record what I type?"
-              a="The demo calculates timing and movement metrics, not the meaning of your input. Inputs remain in this browser tab and are never submitted. Use any text you like. Closing the overlay erases the session. Monitoring only runs inside the demo input areas after you explicitly start it."
+              q="Can someone copy my typing pattern?"
+              a="Copying credentials is easy. Copying the micro-timing of how a person types is much harder. Even if an attacker knows your password, replicating your dwell times and flight transitions consistently, in real time, is extremely difficult. Pasted text and scripted input also tend to show unnatural timing, which is itself a useful signal."
+            />
+            <FaqItem
+              q="Can automated bots or scripts bypass Finomaly?"
+              a="No. Scripts and bots type with unnatural, mathematical perfection—such as 0ms hold times or identical key intervals. Finomaly's similarity engine flags these rigid patterns as zero-telemetry anomalies."
             />
             <FaqItem
               q="What happens if I'm tired or typing faster?"
