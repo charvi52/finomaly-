@@ -1,4 +1,4 @@
-# 🛡️ Finomaly — Behavioral Biometrics & Mule Account Detection Layer
+#Finomaly — Behavioral Biometrics & Mule Account Detection Layer
 
 > **The Future Is Safe.** Passwords can be stolen. The way you move cannot be easily copied.
 
@@ -6,7 +6,7 @@ Finomaly is an advanced, privacy-first continuous authentication prototype engin
 
 ---
 
-## 📌 The Problem: The Identity Gap in Financial Security
+##The Problem: The Identity Gap in Financial Security
 
 Traditional banking security relies heavily on static credentials (passwords, PINs) and 2FA (SMS OTPs, authenticator apps). 
 
@@ -18,9 +18,9 @@ In **mule account fraud** and **account takeover schemes**:
 
 ---
 
-## ✨ Key Features
+##  Key Features
 
-* **🧠 5D Telemetry Vector Extraction**:
+* ** 5D Telemetry Vector Extraction**:
   Measures five distinct neuromuscular habits:
   1. *Average Keystroke Hold Time* (Dwell Time in ms)
   2. *Average Flight Time* (Gap between keypresses in ms)
@@ -28,21 +28,21 @@ In **mule account fraud** and **account takeover schemes**:
   4. *Hold Time Variance* (Consistency of key holds)
   5. *Flight Time Variance* (Rhythm consistency)
 
-* **🔄 3-Session Baseline Enrollment**:
+* ** 3-Session Baseline Enrollment**:
   Captures a multi-session baseline profile (`S1`, `S2`, `S3`) to construct a highly accurate behavioral centroid.
 
-* **⚙️ Hybrid Similarity Engine (`biometrics.ts`)**:
+* ** Hybrid Similarity Engine (`biometrics.ts`)**:
   Combines **Weighted Cosine Similarity** with a **Euclidean Distance Penalty**. Large behavioral gaps (e.g. WPM differences or hold time anomalies) meaningfully drop the similarity score.
 
-* **🚫 Zero-Telemetry & Bot Interceptor**:
+* ** Zero-Telemetry & Bot Interceptor**:
   Instantly flags automated scripts, synthetic key injectors, zero-variance robotic typing (0ms hold times), and copy-paste events.
 
-* **🔒 Privacy by Design (Client-Side Edge Engine)**:
+* ** Privacy by Design (Client-Side Edge Engine)**:
   All keystroke timing telemetry is computed 100% locally inside the browser memory. No raw keystroke content or financial data ever leaves the user's device.
 
 ---
 
-## 🛠️ Tech Stack
+##  Tech Stack
 
 ### **Frontend & Framework**
 * **Next.js 14** (App Router architecture)
@@ -60,7 +60,7 @@ In **mule account fraud** and **account takeover schemes**:
 
 ---
 
-## 📁 Project Structure
+##  Project Structure
 
 ```text
 finomaly/
@@ -84,7 +84,7 @@ finomaly/
 
 ---
 
-## 🚀 Getting Started
+##  Getting Started
 
 ### Prerequisites
 * **Node.js** (v18.0.0 or higher)
@@ -113,7 +113,7 @@ finomaly/
 
 ---
 
-## 👥 Team Hackflux
+##  Team Hackflux
 
 * **Charvi Naresh**
 * **Dolsi Bajaj**
@@ -121,13 +121,13 @@ finomaly/
 
 ---
 
-## 📄 Research & Documentation
+##  Research & Documentation
 
 Download the full **1,000-Experiment Biometric Benchmark Report (PDF)** included in the repository at:  
 `/Finomaly_Biometric_1000_Experiment_Report.pdf`
 
 ---
 
-## 📜 Disclaimer
+##  Disclaimer
 
 *Finomaly is an interactive research prototype developed for hackathon and experimental demonstration purposes. Commercial banking deployment requires secure server-side enrollment, regulatory compliance reviews, anti-spoofing verification, and independent security audits.*
