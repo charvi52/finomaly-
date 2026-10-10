@@ -364,6 +364,44 @@ export default function Home() {
               <p style={{ color: 'var(--muted-foreground)', lineHeight: 1.7, margin: 0 }}>
                 Next: expert algorithm reviews, adversarial testing, and privacy-first research. Our ambition is to help tackle India&apos;s mule account crisis at a national scale.
               </p>
+              <div style={{ marginTop: '0.5rem' }}>
+                <a
+                  href="/Finomaly_Biometric_1000_Experiment_Report.pdf"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.625rem',
+                    padding: '0.75rem 1.25rem',
+                    borderRadius: 10,
+                    border: '1px solid rgba(0, 245, 212, 0.4)',
+                    background: 'rgba(0, 245, 212, 0.08)',
+                    color: '#00f5d4',
+                    fontSize: '0.85rem',
+                    fontWeight: 600,
+                    fontFamily: 'JetBrains Mono, monospace',
+                    textDecoration: 'none',
+                    transition: 'all 0.2s ease',
+                  }}
+                  onMouseEnter={e => {
+                    e.currentTarget.style.background = 'rgba(0, 245, 212, 0.18)';
+                    e.currentTarget.style.borderColor = 'rgba(0, 245, 212, 0.7)';
+                  }}
+                  onMouseLeave={e => {
+                    e.currentTarget.style.background = 'rgba(0, 245, 212, 0.08)';
+                    e.currentTarget.style.borderColor = 'rgba(0, 245, 212, 0.4)';
+                  }}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                    <polyline points="14 2 14 8 20 8" />
+                    <line x1="12" y1="18" x2="12" y2="12" />
+                    <polyline points="9 15 12 18 15 15" />
+                  </svg>
+                  Read 1,000-Experiment Research Report (PDF)
+                </a>
+              </div>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 0 }}>
               {[
@@ -396,8 +434,16 @@ export default function Home() {
           </div>
           <div>
             <FaqItem
-              q="Does Finomaly record what I type?"
-              a="The demo calculates timing and movement metrics, not the meaning of your input. Inputs remain in this browser tab and are never submitted. Use any text you like. Closing the overlay erases the session. Monitoring only runs inside the demo input areas after you explicitly start it."
+              q="Can someone copy my typing pattern?"
+              a="Copying credentials is easy. Copying the micro-timing of how a person types is much harder. Even if an attacker knows your password, replicating your dwell times and flight transitions consistently, in real time, is extremely difficult. Pasted text and scripted input also tend to show unnatural timing, which is itself a useful signal."
+            />
+            <FaqItem
+              q="Can automated bots or scripts bypass Finomaly?"
+              a="No. Scripts and bots type with unnatural, mathematical perfection—such as 0ms hold times or identical key intervals. Finomaly's similarity engine flags these rigid patterns as zero-telemetry anomalies."
+            />
+            <FaqItem
+              q="Can I update my typing baseline?"
+              a="Yes. In a production deployment, your baseline can be refreshed every six months or whenever your typing habits change noticeably. A new baseline is only created after you pass strong verification (such as an OTP or step-up authentication), so no one else can overwrite your profile."
             />
             <FaqItem
               q="What happens if I'm tired or typing faster?"
