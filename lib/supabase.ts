@@ -15,7 +15,7 @@ export function getSupabaseServerClient() {
       autoRefreshToken: false,
     },
     realtime: {
-      transport: WebSocket,
+      transport: WebSocket as any,
     },
   });
 }
