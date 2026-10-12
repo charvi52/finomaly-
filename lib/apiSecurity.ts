@@ -21,11 +21,11 @@ export function checkRateLimit(req: NextRequest): { allowed: boolean; remaining:
 
   // Periodically clean up stale entries if map grows
   if (ipRateLimits.size > 5000) {
-    for (const [key, record] of ipRateLimits.entries()) {
+    ipRateLimits.forEach((record, key) => {
       if (record.resetAt < now) {
         ipRateLimits.delete(key);
       }
-    }
+    });
   }
 
   if (!existing || existing.resetAt < now) {
