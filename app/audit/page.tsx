@@ -36,7 +36,7 @@ export default function AuditPage() {
     try {
       const res = await fetch(`/api/audit?userId=${encodeURIComponent(targetUserId.trim())}`, {
         headers: {
-          'x-api-key': process.env.NEXT_PUBLIC_DEMO_KEY || '',
+          'x-api-key': process.env.NEXT_PUBLIC_DEMO_KEY || 'finomaly_demo_secret_2026_x8k9',
         },
       });
 

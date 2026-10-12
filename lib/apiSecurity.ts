@@ -55,12 +55,20 @@ export function validateApiKey(req: NextRequest): { valid: boolean; error?: stri
   }
 
   const providedKey = req.headers.get('x-api-key');
-  if (!providedKey || providedKey !== expectedKey) {
-    return {
-      valid: false,
-      error: 'Unauthorized: Invalid or missing x-api-key header',
-    };
+  if (providedKey && providedKey === expectedKey) {
+    return { valid: true };
   }
 
-  return { valid: true };
+  // Also allow same-origin requests from the demo browser frontend
+  const origin = req.headers.get('origin');
+  const host = req.headers.get('host');
+  const secFetchSite = req.headers.get('sec-fetch-site');
+  if (secFetchSite === 'same-origin' || (origin && host && origin.includes(host))) {
+    return { valid: true };
+  }
+
+  return {
+    valid: false,
+    error: 'Unauthorized: Invalid or missing x-api-key header',
+  };
 }

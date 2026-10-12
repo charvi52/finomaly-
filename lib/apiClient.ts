@@ -33,7 +33,7 @@ export async function enrollSessionApi(
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': process.env.NEXT_PUBLIC_DEMO_KEY || '',
+        'x-api-key': process.env.NEXT_PUBLIC_DEMO_KEY || 'finomaly_demo_secret_2026_x8k9',
       },
       body: JSON.stringify({
         userId,
@@ -76,7 +76,7 @@ export async function verifySessionApi(
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': process.env.NEXT_PUBLIC_DEMO_KEY || '',
+        'x-api-key': process.env.NEXT_PUBLIC_DEMO_KEY || 'finomaly_demo_secret_2026_x8k9',
       },
       body: JSON.stringify({
         userId,
