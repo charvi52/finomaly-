@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import WebSocket from 'ws';
 
 // Server-side only Supabase client using Service Role Key
 const supabaseUrl = process.env.SUPABASE_URL;
@@ -12,6 +13,9 @@ export function getSupabaseServerClient() {
     auth: {
       persistSession: false,
       autoRefreshToken: false,
+    },
+    realtime: {
+      transport: WebSocket,
     },
   });
 }
