@@ -14,6 +14,7 @@ import {
   perSessionSimilarities,
   NormVector,
 } from './biometrics';
+import { verifySessionApi } from '@/lib/apiClient';
 
 const PASSPHRASE = 'behavioral authentication protects accounts where passwords cannot reach';
 
@@ -36,7 +37,7 @@ const LOGO_PATHS = [
   'M9 6.8a6 6 0 0 1 9 5.2v2',
 ];
 
-interface AuthResult {
+export interface AuthResult {
   liveVector: RawVector;
   liveNorm: NormVector;
   baselineNorm: NormVector;
@@ -44,6 +45,7 @@ interface AuthResult {
   perSession: number[];
   featureDeltas: ReturnType<typeof computeFeatureDeltas>;
   liveKeystrokes: KeystrokeEvent[];
+  mode?: 'server' | 'local';
 }
 
 interface Props {
@@ -109,7 +111,7 @@ export default function LoginSession({ baselineSessions, onResult, onReenroll }:
       if (step >= ANALYZE_STEPS.length) clearInterval(interval);
     }, 320);
 
-    setTimeout(() => {
+    setTimeout(async () => {
       const totalMs = startTimeRef.current ? performance.now() - startTimeRef.current : 3000;
       const liveVector = extractRawVector({
         keystrokes: keystrokesRef.current,
@@ -121,22 +123,45 @@ export default function LoginSession({ baselineSessions, onResult, onReenroll }:
       const liveNorm = normaliseVector(liveVector);
       const baselineRaw = averageRawVectors(baselineSessions);
       const baselineNorm = normaliseVector(baselineRaw);
-      const similarity = hybridSimilarity(baselineNorm, liveNorm);
+      const localSimilarity = hybridSimilarity(baselineNorm, liveNorm);
       const sessionNorms: NormVector[] = baselineSessions.map(s => normaliseVector(s));
       const perSession = perSessionSimilarities(sessionNorms, liveNorm);
-      const featureDeltas = computeFeatureDeltas(baselineRaw, liveVector);
+      const localFeatureDeltas = computeFeatureDeltas(baselineRaw, liveVector);
+
+      let finalSimilarity = localSimilarity;
+      let finalFeatureDeltas = localFeatureDeltas;
+      let mode: 'server' | 'local' = 'local';
+
+      try {
+        const verifyRes = await verifySessionApi(liveVector, {
+          pasteDetected: isPasted,
+          botSuspected: false,
+        });
+
+        if (verifyRes.success && typeof verifyRes.score === 'number') {
+          finalSimilarity = verifyRes.score;
+          if (verifyRes.featureDeltas) {
+            finalFeatureDeltas = verifyRes.featureDeltas;
+          }
+          mode = 'server';
+        }
+      } catch {
+        // Fall back silently to local calculation
+        mode = 'local';
+      }
 
       onResult({
         liveVector,
         liveNorm,
         baselineNorm,
-        similarity,
+        similarity: finalSimilarity,
         perSession,
-        featureDeltas,
+        featureDeltas: finalFeatureDeltas,
         liveKeystrokes: keystrokesRef.current,
+        mode,
       });
     }, 1400);
-  }, [passphraseComplete, typed, baselineSessions, onResult]);
+  }, [passphraseComplete, typed, baselineSessions, isPasted, onResult]);
 
   if (isPasted) {
     return (

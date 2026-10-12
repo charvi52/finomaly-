@@ -28,6 +28,7 @@ interface AuthResult {
   perSession: number[];
   featureDeltas: FeatureDelta[];
   liveKeystrokes: KeystrokeEvent[];
+  mode?: 'server' | 'local';
 }
 
 export default function ImposterChallengeModal() {
@@ -187,6 +188,7 @@ export default function ImposterChallengeModal() {
                   featureDeltas={result.featureDeltas}
                   perSession={result.perSession}
                   liveKeystrokes={result.liveKeystrokes}
+                  mode={result.mode}
                   onRetry={onRetry}
                   onClose={close}
                 />

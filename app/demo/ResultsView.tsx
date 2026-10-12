@@ -22,6 +22,7 @@ interface Props {
   featureDeltas: FeatureDelta[];
   perSession: number[];
   liveKeystrokes: KeystrokeEvent[];
+  mode?: 'server' | 'local';
   onRetry: () => void;
   onClose: () => void;
 }
@@ -165,7 +166,7 @@ function GNNRadar({ scores }: { scores: number[] }) {
 // ── Main results view ─────────────────────────────────────────────────────────
 export default function ResultsView({
   similarity, liveVector, liveNorm, baselineNorm, baselineSessions,
-  featureDeltas, perSession, liveKeystrokes, onRetry, onClose,
+  featureDeltas, perSession, liveKeystrokes, mode = 'local', onRetry, onClose,
 }: Props) {
   const [tab, setTab] = useState<Tab>('overview');
 
@@ -200,9 +201,28 @@ export default function ResultsView({
         display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', flexWrap: 'wrap',
       }}>
         <div>
-          <p style={{ margin: 0, fontFamily: 'JetBrains Mono, monospace', fontSize: '0.68rem', color: 'var(--muted-foreground)' }}>
-            AUTHENTICATION RESULT
-          </p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
+            <p style={{ margin: 0, fontFamily: 'JetBrains Mono, monospace', fontSize: '0.68rem', color: 'var(--muted-foreground)' }}>
+              AUTHENTICATION RESULT
+            </p>
+            {/* Server-verified vs Local mode badge */}
+            <span style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '4px',
+              padding: '2px 8px',
+              borderRadius: 4,
+              fontSize: '0.65rem',
+              fontWeight: 600,
+              fontFamily: 'JetBrains Mono, monospace',
+              border: mode === 'server' ? '1px solid rgba(0,245,212,0.4)' : '1px solid var(--border)',
+              background: mode === 'server' ? 'rgba(0,245,212,0.1)' : 'rgba(255,255,255,0.04)',
+              color: mode === 'server' ? '#00f5d4' : 'var(--muted-foreground)',
+            }}>
+              <span style={{ width: 6, height: 6, borderRadius: '50%', background: mode === 'server' ? '#00f5d4' : '#6b7e83' }} />
+              {mode === 'server' ? 'Server-verified' : 'Local mode'}
+            </span>
+          </div>
           <p style={{ margin: '0.2rem 0 0', fontFamily: 'JetBrains Mono, monospace', fontSize: '0.95rem', fontWeight: 700, color: bandColor }}>
             {band === 'match' ? 'ACCESS GRANTED' : band === 'rushed' ? 'STEPPED UP — FURTHER VERIFICATION NEEDED' : 'ACCESS DENIED — BEHAVIORAL ANOMALY'}
           </p>

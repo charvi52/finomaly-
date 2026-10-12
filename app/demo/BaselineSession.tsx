@@ -11,6 +11,7 @@ import {
   wordCount,
   extractRawVector,
 } from './biometrics';
+import { enrollSessionApi } from '@/lib/apiClient';
 
 // ── 3 Baseline Passages ──────────────────────────────────────────────────────
 const BASELINE_PASSAGES = [
@@ -138,6 +139,9 @@ export default function BaselineSession({ onComplete }: Props) {
 
     const newVectors = [...collectedVectorsRef.current, vector];
     collectedVectorsRef.current = newVectors;
+
+    // Send numeric vector to backend /api/enroll (3s timeout with silent local fallback)
+    enrollSessionApi(vector).catch(() => {});
 
     if (currentSessionIndex < 2) {
       // Advance to next session

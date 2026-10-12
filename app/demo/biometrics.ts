@@ -18,7 +18,7 @@ export const IGNORED_KEYS = new Set([
 
 // ── Normalisation bounds ─────────────────────────────────────────────────────
 // Maps raw values to [0, 1] using percentile-calibrated bounds.
-const BOUNDS = {
+export const BOUNDS = {
   avgHoldTime:       { min: 40,  max: 250 },  // ms
   avgFlightTime:     { min: 20,  max: 400 },  // ms
   wpm:               { min: 15,  max: 150 },  // words per minute
@@ -26,7 +26,54 @@ const BOUNDS = {
   flightTimeVariance:{ min: 0,   max: 200 },  // ms std dev
 } as const;
 
-type FeatureKey = keyof typeof BOUNDS;
+export type FeatureKey = keyof typeof BOUNDS;
+
+// Exponential Moving Average (EMA) weight for verified match baseline adaptation
+export const EMA_ALPHA = 0.12;
+
+export function rawVectorToArray(raw: RawVector): [number, number, number, number, number] {
+  return [raw.avgHoldTime, raw.avgFlightTime, raw.wpm, raw.holdTimeVariance, raw.flightTimeVariance];
+}
+
+export function arrayToRawVector(arr: [number, number, number, number, number] | number[]): RawVector {
+  return {
+    avgHoldTime: arr[0],
+    avgFlightTime: arr[1],
+    wpm: arr[2],
+    holdTimeVariance: arr[3],
+    flightTimeVariance: arr[4],
+  };
+}
+
+export function applyEmaUpdate(oldBaseline: RawVector, liveVector: RawVector, alpha: number = EMA_ALPHA): RawVector {
+  const keys: (keyof RawVector)[] = ['avgHoldTime', 'avgFlightTime', 'wpm', 'holdTimeVariance', 'flightTimeVariance'];
+  const res = {} as RawVector;
+  for (const k of keys) {
+    res[k] = (1 - alpha) * oldBaseline[k] + alpha * liveVector[k];
+  }
+  return res;
+}
+
+export function validateNumericVector(v: unknown): { valid: boolean; error?: string; vector?: [number, number, number, number, number] } {
+  if (!Array.isArray(v) || v.length !== 5) {
+    return { valid: false, error: 'Vector must be an array of exactly 5 numbers' };
+  }
+  for (let i = 0; i < 5; i++) {
+    const val = v[i];
+    if (typeof val !== 'number' || !Number.isFinite(val)) {
+      return { valid: false, error: `Vector element at index ${i} must be a finite number` };
+    }
+  }
+  // Sane bounds checking
+  const [hold, flight, wpm, hVar, fVar] = v as number[];
+  if (hold < 0 || hold > 5000) return { valid: false, error: 'avgHoldTime out of sane bounds (0-5000ms)' };
+  if (flight < -1000 || flight > 10000) return { valid: false, error: 'avgFlightTime out of sane bounds (-1000 to 10000ms)' };
+  if (wpm < 0 || wpm > 1000) return { valid: false, error: 'wpm out of sane bounds (0-1000)' };
+  if (hVar < 0 || hVar > 5000) return { valid: false, error: 'holdTimeVariance out of sane bounds (0-5000)' };
+  if (fVar < 0 || fVar > 10000) return { valid: false, error: 'flightTimeVariance out of sane bounds (0-10000)' };
+
+  return { valid: true, vector: [hold, flight, wpm, hVar, fVar] };
+}
 
 export interface KeystrokeEvent {
   key: string;

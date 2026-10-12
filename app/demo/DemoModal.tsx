@@ -30,6 +30,7 @@ interface AuthResult {
   perSession: number[];
   featureDeltas: FeatureDelta[];
   liveKeystrokes: KeystrokeEvent[];
+  mode?: 'server' | 'local';
 }
 
 function loadSavedBaseline(): RawVector[] | null {
@@ -170,6 +171,7 @@ export default function DemoModal() {
                 featureDeltas={result.featureDeltas}
                 perSession={result.perSession}
                 liveKeystrokes={result.liveKeystrokes}
+                mode={result.mode}
                 onRetry={onRetry}
                 onClose={close}
               />

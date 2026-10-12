@@ -489,7 +489,7 @@ export default function Home() {
               </span>
             </a>
             <p style={{ fontSize: '0.8rem', color: 'var(--muted-foreground)', margin: 0 }}>
-              A research prototype by <strong style={{ color: 'var(--foreground)' }}>Team Hackflux</strong>. No financial data is collected. No biometric data leaves your device.
+              A research prototype by <strong style={{ color: 'var(--foreground)' }}>Team Hackflux</strong>. Only a numeric timing vector is sent to the server, never what you type. Closing the session erases it.
             </p>
           </div>
         </div>
