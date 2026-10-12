@@ -140,6 +140,29 @@ export default function Home() {
                 onMouseLeave={e => (e.currentTarget.style.color = 'var(--muted-foreground)')}
               >{label}</a>
             ))}
+            <a
+              href="/audit"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                padding: '4px 12px',
+                borderRadius: 6,
+                border: '1px solid rgba(0,245,212,0.4)',
+                background: 'rgba(0,245,212,0.06)',
+                color: '#00f5d4',
+                textDecoration: 'none',
+                fontFamily: 'JetBrains Mono, monospace',
+                fontSize: '0.78rem',
+                fontWeight: 600,
+                transition: 'all 0.2s',
+              }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'rgba(0,245,212,0.15)')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'rgba(0,245,212,0.06)')}
+            >
+              <span className="status-dot" style={{ width: 6, height: 6 }} />
+              AUDIT LOGS
+            </a>
           </nav>
           <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '0.8rem', color: 'var(--primary)', display: 'flex', alignItems: 'center', gap: 8 }}>
             <span className="status-dot" />SYSTEM ONLINE

@@ -124,6 +124,42 @@ export default function ImposterChallengeModal() {
               </div>
             </div>
 
+            {/* Live Backend Connection Indicator */}
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              padding: '6px 14px',
+              background: 'rgba(0, 245, 212, 0.04)',
+              borderBottom: '1px solid var(--border)',
+              fontSize: '0.72rem',
+              fontFamily: 'JetBrains Mono, monospace',
+              color: 'var(--muted-foreground)',
+            }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: '#00f5d4' }}>
+                <span className="status-dot" style={{ width: 6, height: 6 }} />
+                BACKEND ACTIVE // SUPABASE POSTGRES
+              </span>
+              <a
+                href="/audit"
+                target="_blank"
+                rel="noreferrer"
+                style={{
+                  color: 'var(--muted-foreground)',
+                  textDecoration: 'none',
+                  fontSize: '0.7rem',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 4,
+                  transition: 'color 0.2s',
+                }}
+                onMouseEnter={e => (e.currentTarget.style.color = '#00f5d4')}
+                onMouseLeave={e => (e.currentTarget.style.color = 'var(--muted-foreground)')}
+              >
+                VIEW AUDIT LOG ↗
+              </a>
+            </div>
+
             {phase === 'intro' && (
               <div style={{ padding: '2.5rem 1.5rem', textAlign: 'center' }} className="fade-in">
                 <div style={{ width: 52, height: 52, borderRadius: '50%', background: 'rgba(255,107,53,0.1)', border: '2px solid rgba(255,107,53,0.3)', margin: '0 auto 1.25rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>

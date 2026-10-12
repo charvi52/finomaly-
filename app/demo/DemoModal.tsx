@@ -152,6 +152,42 @@ export default function DemoModal() {
               </div>
             </div>
 
+            {/* Live Backend Connection Indicator */}
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              padding: '6px 14px',
+              background: 'rgba(0, 245, 212, 0.04)',
+              borderBottom: '1px solid var(--border)',
+              fontSize: '0.72rem',
+              fontFamily: 'JetBrains Mono, monospace',
+              color: 'var(--muted-foreground)',
+            }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: '#00f5d4' }}>
+                <span className="status-dot" style={{ width: 6, height: 6 }} />
+                BACKEND ACTIVE // SUPABASE POSTGRES
+              </span>
+              <a
+                href="/audit"
+                target="_blank"
+                rel="noreferrer"
+                style={{
+                  color: 'var(--muted-foreground)',
+                  textDecoration: 'none',
+                  fontSize: '0.7rem',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 4,
+                  transition: 'color 0.2s',
+                }}
+                onMouseEnter={e => (e.currentTarget.style.color = '#00f5d4')}
+                onMouseLeave={e => (e.currentTarget.style.color = 'var(--muted-foreground)')}
+              >
+                VIEW AUDIT LOG ↗
+              </a>
+            </div>
+
             {/* Phase content */}
             {phase === 'baseline' && <BaselineSession onComplete={onBaselineComplete} />}
             {phase === 'login' && (
