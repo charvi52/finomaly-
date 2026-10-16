@@ -76,6 +76,27 @@ export default function BaselineSession({ onComplete }: Props) {
 
   const { label: accLabel, color: accColor } = accuracyLabel(accuracy);
 
+  // Real-time character-by-character typo detection
+  let firstTypoIndex = -1;
+  let firstTypoExpected = '';
+  let firstTypoActual = '';
+  let typoCount = 0;
+
+  for (let i = 0; i < typed.length; i++) {
+    if (i < currentPassage.length) {
+      if (typed[i].toLowerCase() !== currentPassage[i].toLowerCase()) {
+        typoCount++;
+        if (firstTypoIndex === -1) {
+          firstTypoIndex = i;
+          firstTypoExpected = currentPassage[i] === ' ' ? 'Space' : currentPassage[i];
+          firstTypoActual = typed[i] === ' ' ? 'Space' : typed[i];
+        }
+      }
+    }
+  }
+
+  const hasTypo = firstTypoIndex !== -1;
+
   const resetSessionRefs = () => {
     setTyped('');
     setHasBackspace(false);
@@ -291,21 +312,93 @@ export default function BaselineSession({ onComplete }: Props) {
           Type passage {currentSessionIndex + 1} naturally at your own pace:
         </p>
         <div style={{
-          background: 'rgba(0,245,212,0.04)',
-          border: '1px solid rgba(0,245,212,0.12)',
+          background: 'rgba(0,245,212,0.03)',
+          border: hasTypo ? '1px solid rgba(255,107,53,0.35)' : '1px solid rgba(0,245,212,0.15)',
           borderRadius: 8,
-          padding: '1rem',
-          fontFamily: 'Georgia, serif',
-          fontSize: '0.86rem',
-          color: '#a8bbbf',
-          lineHeight: 1.7,
+          padding: '0.85rem 1rem',
+          fontFamily: 'JetBrains Mono, monospace',
+          fontSize: '0.84rem',
+          lineHeight: 1.65,
           userSelect: 'none',
-          maxHeight: 120,
+          maxHeight: 130,
           overflowY: 'auto',
+          transition: 'border-color 0.2s',
         }}>
-          {currentPassage}
+          {currentPassage.split('').map((char, i) => {
+            let color = 'rgba(240,244,245,0.4)';
+            let bg = 'transparent';
+            let borderBottom = 'none';
+
+            if (i < typed.length) {
+              const isCorrect = typed[i].toLowerCase() === char.toLowerCase();
+              color = isCorrect ? '#00f5d4' : '#ff6b35';
+              borderBottom = isCorrect ? '2px solid rgba(0,245,212,0.6)' : '2px solid #ff6b35';
+              if (!isCorrect) bg = 'rgba(255,107,53,0.15)';
+            } else if (i === typed.length) {
+              color = '#ffffff';
+              borderBottom = '2px solid #00f5d4';
+            }
+
+            return (
+              <span
+                key={i}
+                style={{
+                  color,
+                  background: bg,
+                  borderBottom,
+                  transition: 'color 0.1s, border-bottom 0.1s',
+                  fontWeight: i < typed.length ? 600 : 400,
+                }}
+              >
+                {char}
+              </span>
+            );
+          })}
         </div>
       </div>
+
+      {/* Real-time Typo Warning Banner */}
+      {hasTypo ? (
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.5rem',
+          padding: '0.45rem 0.85rem',
+          borderRadius: 6,
+          background: 'rgba(255, 107, 53, 0.12)',
+          border: '1px solid rgba(255, 107, 53, 0.4)',
+          color: '#ff6b35',
+          fontFamily: 'JetBrains Mono, monospace',
+          fontSize: '0.74rem',
+          marginBottom: '0.75rem',
+        }}>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ flexShrink: 0 }}>
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+            <line x1="12" y1="9" x2="12" y2="13"/>
+            <line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+          <span>
+            <strong>TYPO WARNING:</strong> Expected &apos;{firstTypoExpected}&apos;, typed &apos;{firstTypoActual}&apos;. Press Backspace ⌫ to correct ({typoCount} mismatch{typoCount > 1 ? 'es' : ''}).
+          </span>
+        </div>
+      ) : typed.length > 0 ? (
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.5rem',
+          padding: '0.35rem 0.85rem',
+          borderRadius: 6,
+          background: 'rgba(0, 245, 212, 0.05)',
+          border: '1px solid rgba(0, 245, 212, 0.2)',
+          color: '#00f5d4',
+          fontFamily: 'JetBrains Mono, monospace',
+          fontSize: '0.72rem',
+          marginBottom: '0.75rem',
+        }}>
+          <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#00f5d4' }} />
+          <span>TYPING ACCURATE // NO MISMATCHES DETECTED</span>
+        </div>
+      ) : null}
 
       {/* Textarea */}
       <textarea
@@ -331,7 +424,14 @@ export default function BaselineSession({ onComplete }: Props) {
           fontFamily: 'JetBrains Mono, monospace',
           fontSize: '0.86rem',
           lineHeight: 1.7,
-          borderColor: canSubmit ? '#00f5d4' : hasBackspace ? 'rgba(255,107,53,0.4)' : undefined,
+          borderColor: hasTypo
+            ? '#ff6b35'
+            : canSubmit
+            ? '#00f5d4'
+            : hasBackspace
+            ? 'rgba(255,107,53,0.4)'
+            : undefined,
+          boxShadow: hasTypo ? '0 0 10px rgba(255, 107, 53, 0.25)' : undefined,
         }}
       />
 

@@ -77,6 +77,27 @@ export default function LoginSession({ baselineSessions, onResult, onReenroll }:
   const passphraseComplete = isExactMatch || isSubstantial;
   const progress = Math.min(100, (typed.length / PASSPHRASE.length) * 100);
 
+  // Real-time character-by-character typo detection
+  let firstTypoIndex = -1;
+  let firstTypoExpected = '';
+  let firstTypoActual = '';
+  let typoCount = 0;
+
+  for (let i = 0; i < typed.length; i++) {
+    if (i < PASSPHRASE.length) {
+      if (typed[i].toLowerCase() !== PASSPHRASE[i].toLowerCase()) {
+        typoCount++;
+        if (firstTypoIndex === -1) {
+          firstTypoIndex = i;
+          firstTypoExpected = PASSPHRASE[i] === ' ' ? 'Space' : PASSPHRASE[i];
+          firstTypoActual = typed[i] === ' ' ? 'Space' : typed[i];
+        }
+      }
+    }
+  }
+
+  const hasTypo = firstTypoIndex !== -1;
+
   const onKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (e.repeat) return;
     const { key } = e;
@@ -315,6 +336,49 @@ export default function LoginSession({ baselineSessions, onResult, onReenroll }:
             })}
           </div>
 
+          {/* Real-time Typo Warning Banner */}
+          {hasTypo ? (
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              padding: '0.45rem 0.85rem',
+              borderRadius: 6,
+              background: 'rgba(255, 107, 53, 0.12)',
+              border: '1px solid rgba(255, 107, 53, 0.4)',
+              color: '#ff6b35',
+              fontFamily: 'JetBrains Mono, monospace',
+              fontSize: '0.74rem',
+              marginBottom: '0.625rem',
+            }}>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ flexShrink: 0 }}>
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                <line x1="12" y1="9" x2="12" y2="13"/>
+                <line x1="12" y1="17" x2="12.01" y2="17"/>
+              </svg>
+              <span>
+                <strong>TYPO WARNING:</strong> Expected &apos;{firstTypoExpected}&apos;, typed &apos;{firstTypoActual}&apos;. Press Backspace ⌫ to correct ({typoCount} mismatch{typoCount > 1 ? 'es' : ''}).
+              </span>
+            </div>
+          ) : typed.length > 0 ? (
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              padding: '0.35rem 0.85rem',
+              borderRadius: 6,
+              background: 'rgba(0, 245, 212, 0.05)',
+              border: '1px solid rgba(0, 245, 212, 0.2)',
+              color: '#00f5d4',
+              fontFamily: 'JetBrains Mono, monospace',
+              fontSize: '0.72rem',
+              marginBottom: '0.625rem',
+            }}>
+              <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#00f5d4' }} />
+              <span>TYPING ACCURATE // NO MISMATCHES DETECTED</span>
+            </div>
+          ) : null}
+
           <input
             type="text"
             className="typing-input"
@@ -331,7 +395,16 @@ export default function LoginSession({ baselineSessions, onResult, onReenroll }:
             autoCorrect="off"
             autoCapitalize="off"
             spellCheck={false}
-            style={{ borderColor: passphraseComplete ? '#00f5d4' : hasBackspace ? 'rgba(255,107,53,0.4)' : undefined }}
+            style={{
+              borderColor: hasTypo
+                ? '#ff6b35'
+                : passphraseComplete
+                ? '#00f5d4'
+                : hasBackspace
+                ? 'rgba(255,107,53,0.4)'
+                : undefined,
+              boxShadow: hasTypo ? '0 0 10px rgba(255, 107, 53, 0.25)' : undefined,
+            }}
           />
 
           {/* Progress */}
