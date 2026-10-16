@@ -138,7 +138,7 @@ export default function LoginSession({ baselineSessions, onResult, onReenroll }:
       { pasteDetected: isPasted, botSuspected: false },
       undefined,
       baselineSessions
-    ).catch(() => ({ success: false }));
+    );
 
     // Seamlessly transition right when animation completes
     setTimeout(async () => {
