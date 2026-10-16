@@ -11,6 +11,7 @@ import {
   applyEmaUpdate,
   EMA_ALPHA,
   RawVector,
+  averageRawVectors,
 } from '@/app/demo/biometrics';
 
 export const runtime = 'nodejs';
@@ -22,6 +23,7 @@ interface VerifyRequestBody {
     pasteDetected?: boolean;
     botSuspected?: boolean;
   };
+  clientBaseline?: RawVector[];
 }
 
 export async function POST(req: NextRequest) {
@@ -99,19 +101,34 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    if (!profile || !profile.baseline) {
-      return NextResponse.json(
-        { error: 'No enrolled baseline found for this user. Please complete baseline enrollment first.' },
-        { status: 404 }
-      );
-    }
+    let baselineRaw: RawVector;
 
-    // Extract baseline centroid RawVector
-    const baselineRaw: RawVector =
-      profile.baseline.centroid ||
-      (Array.isArray(profile.baseline.sessions) && profile.baseline.sessions.length > 0
-        ? profile.baseline.sessions[0]
-        : profile.baseline);
+    if (!profile || !profile.baseline) {
+      if (body.clientBaseline && Array.isArray(body.clientBaseline) && body.clientBaseline.length > 0) {
+        baselineRaw = averageRawVectors(body.clientBaseline);
+        await supabase.from('profiles').upsert({
+          user_id: userId,
+          baseline: {
+            sessions: body.clientBaseline,
+            centroid: baselineRaw,
+          },
+          sessions_count: body.clientBaseline.length,
+          consent: true,
+          updated_at: new Date().toISOString(),
+        });
+      } else {
+        return NextResponse.json(
+          { error: 'No enrolled baseline found for this user. Please complete baseline enrollment first.' },
+          { status: 404 }
+        );
+      }
+    } else {
+      baselineRaw =
+        profile.baseline.centroid ||
+        (Array.isArray(profile.baseline.sessions) && profile.baseline.sessions.length > 0
+          ? profile.baseline.sessions[0]
+          : profile.baseline);
+    }
 
     const baselineNorm = normaliseVector(baselineRaw);
     const liveNorm = normaliseVector(liveRaw);

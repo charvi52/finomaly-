@@ -3,14 +3,15 @@ import { rawVectorToArray, RawVector, FeatureDelta } from '@/app/demo/biometrics
 export function getDemoUserId(): string {
   if (typeof window === 'undefined') return 'demo-offline';
   try {
-    let id = sessionStorage.getItem('finomaly_demo_uid');
+    let id = localStorage.getItem('finomaly_demo_uid') || sessionStorage.getItem('finomaly_demo_uid');
     if (!id) {
       id =
         typeof crypto !== 'undefined' && crypto.randomUUID
           ? crypto.randomUUID()
           : 'demo-' + Math.random().toString(36).substring(2, 11);
-      sessionStorage.setItem('finomaly_demo_uid', id);
     }
+    localStorage.setItem('finomaly_demo_uid', id);
+    sessionStorage.setItem('finomaly_demo_uid', id);
     return id;
   } catch {
     return 'demo-session';
@@ -61,7 +62,8 @@ export async function enrollSessionApi(
 export async function verifySessionApi(
   vector: RawVector,
   flags?: { pasteDetected?: boolean; botSuspected?: boolean },
-  userId = getDemoUserId()
+  userId = getDemoUserId(),
+  clientBaseline?: RawVector[]
 ): Promise<{
   success: boolean;
   score?: number;
@@ -82,6 +84,7 @@ export async function verifySessionApi(
         userId,
         vector: rawVectorToArray(vector),
         flags,
+        clientBaseline,
       }),
       signal: controller.signal,
     });

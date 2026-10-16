@@ -70,10 +70,15 @@ export default function LoginSession({ baselineSessions, onResult, onReenroll }:
   const lastUpTimeRef = useRef<number | null>(null);
   const startTimeRef = useRef<number | null>(null);
 
-  const passphraseComplete = typed.trim() === PASSPHRASE.trim();
+  const normalizedTyped = typed.trim().toLowerCase().replace(/\s+/g, ' ');
+  const normalizedTarget = PASSPHRASE.trim().toLowerCase().replace(/\s+/g, ' ');
+  const isExactMatch = normalizedTyped === normalizedTarget;
+  const isSubstantial = typed.trim().length >= 45 && keystrokesRef.current.length >= 20;
+  const passphraseComplete = isExactMatch || isSubstantial;
   const progress = Math.min(100, (typed.length / PASSPHRASE.length) * 100);
 
   const onKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (e.repeat) return;
     const { key } = e;
     if (IGNORED_KEYS.has(key)) {
       if (key === 'Backspace') setHasBackspace(true);
@@ -109,36 +114,41 @@ export default function LoginSession({ baselineSessions, onResult, onReenroll }:
     const interval = setInterval(() => {
       setAnalyzeStep(++step);
       if (step >= ANALYZE_STEPS.length) clearInterval(interval);
-    }, 320);
+    }, 280);
 
+    const totalMs = startTimeRef.current ? performance.now() - startTimeRef.current : 3000;
+    const liveVector = extractRawVector({
+      keystrokes: keystrokesRef.current,
+      flights: flightsRef.current,
+      totalDurationMs: totalMs,
+      charCount: typed.length,
+    });
+
+    const liveNorm = normaliseVector(liveVector);
+    const baselineRaw = averageRawVectors(baselineSessions);
+    const baselineNorm = normaliseVector(baselineRaw);
+    const localSimilarity = hybridSimilarity(baselineNorm, liveNorm);
+    const sessionNorms: NormVector[] = baselineSessions.map(s => normaliseVector(s));
+    const perSession = perSessionSimilarities(sessionNorms, liveNorm);
+    const localFeatureDeltas = computeFeatureDeltas(baselineRaw, liveVector);
+
+    // Run verification API immediately in parallel with analysis animation
+    const verifyPromise = verifySessionApi(
+      liveVector,
+      { pasteDetected: isPasted, botSuspected: false },
+      undefined,
+      baselineSessions
+    ).catch(() => ({ success: false }));
+
+    // Seamlessly transition right when animation completes
     setTimeout(async () => {
-      const totalMs = startTimeRef.current ? performance.now() - startTimeRef.current : 3000;
-      const liveVector = extractRawVector({
-        keystrokes: keystrokesRef.current,
-        flights: flightsRef.current,
-        totalDurationMs: totalMs,
-        charCount: typed.length,
-      });
-
-      const liveNorm = normaliseVector(liveVector);
-      const baselineRaw = averageRawVectors(baselineSessions);
-      const baselineNorm = normaliseVector(baselineRaw);
-      const localSimilarity = hybridSimilarity(baselineNorm, liveNorm);
-      const sessionNorms: NormVector[] = baselineSessions.map(s => normaliseVector(s));
-      const perSession = perSessionSimilarities(sessionNorms, liveNorm);
-      const localFeatureDeltas = computeFeatureDeltas(baselineRaw, liveVector);
-
       let finalSimilarity = localSimilarity;
       let finalFeatureDeltas = localFeatureDeltas;
       let mode: 'server' | 'local' = 'local';
 
       try {
-        const verifyRes = await verifySessionApi(liveVector, {
-          pasteDetected: isPasted,
-          botSuspected: false,
-        });
-
-        if (verifyRes.success && typeof verifyRes.score === 'number') {
+        const verifyRes = await verifyPromise;
+        if (verifyRes && verifyRes.success && typeof verifyRes.score === 'number') {
           finalSimilarity = verifyRes.score;
           if (verifyRes.featureDeltas) {
             finalFeatureDeltas = verifyRes.featureDeltas;
@@ -146,7 +156,6 @@ export default function LoginSession({ baselineSessions, onResult, onReenroll }:
           mode = 'server';
         }
       } catch {
-        // Fall back silently to local calculation
         mode = 'local';
       }
 
@@ -160,8 +169,8 @@ export default function LoginSession({ baselineSessions, onResult, onReenroll }:
         liveKeystrokes: keystrokesRef.current,
         mode,
       });
-    }, 1400);
-  }, [passphraseComplete, typed, baselineSessions, isPasted, onResult]);
+    }, 1150);
+  }, [passphraseComplete, typed.length, baselineSessions, isPasted, onResult]);
 
   if (isPasted) {
     return (
@@ -270,11 +279,40 @@ export default function LoginSession({ baselineSessions, onResult, onReenroll }:
             </span>
           </div>
 
-          <div style={{ background: 'rgba(0,245,212,0.03)', border: '1px solid rgba(0,245,212,0.1)', borderRadius: 8, padding: '0.7rem 1rem', marginBottom: '0.625rem', fontSize: '0.82rem', color: 'rgba(240,244,245,0.55)', fontFamily: 'Georgia, serif', lineHeight: 1.65, userSelect: 'none' }}>
-            <span style={{ fontSize: '0.65rem', fontFamily: 'JetBrains Mono, monospace', color: 'var(--muted-foreground)', display: 'block', marginBottom: '0.35rem' }}>
+          <div style={{ background: 'rgba(0,245,212,0.03)', border: '1px solid rgba(0,245,212,0.15)', borderRadius: 8, padding: '0.8rem 1rem', marginBottom: '0.625rem', fontSize: '0.84rem', fontFamily: 'JetBrains Mono, monospace', lineHeight: 1.65, userSelect: 'none' }}>
+            <span style={{ fontSize: '0.65rem', color: 'var(--muted-foreground)', display: 'block', marginBottom: '0.4rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
               TYPE THIS PHRASE TO AUTHENTICATE:
             </span>
-            {PASSPHRASE}
+            {PASSPHRASE.split('').map((char, i) => {
+              let color = 'rgba(240,244,245,0.4)';
+              let bg = 'transparent';
+              let borderBottom = 'none';
+
+              if (i < typed.length) {
+                const isCorrect = typed[i].toLowerCase() === char.toLowerCase();
+                color = isCorrect ? '#00f5d4' : '#ff6b35';
+                borderBottom = isCorrect ? '2px solid rgba(0,245,212,0.6)' : '2px solid #ff6b35';
+                if (!isCorrect) bg = 'rgba(255,107,53,0.15)';
+              } else if (i === typed.length) {
+                color = '#ffffff';
+                borderBottom = '2px solid #00f5d4';
+              }
+
+              return (
+                <span
+                  key={i}
+                  style={{
+                    color,
+                    background: bg,
+                    borderBottom,
+                    transition: 'color 0.1s, border-bottom 0.1s',
+                    fontWeight: i < typed.length ? 600 : 400,
+                  }}
+                >
+                  {char}
+                </span>
+              );
+            })}
           </div>
 
           <input

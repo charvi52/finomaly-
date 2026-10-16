@@ -27,13 +27,6 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const userId = searchParams.get('userId');
 
-  if (!userId || !userId.trim()) {
-    return NextResponse.json(
-      { error: 'Query parameter userId is required' },
-      { status: 400 }
-    );
-  }
-
   // 4. Supabase DB query
   const supabase = getSupabaseServerClient();
   if (!supabase) {
@@ -44,12 +37,17 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const { data: logs, error } = await supabase
+    let query = supabase
       .from('audit_logs')
       .select('id, user_id, score, band, features, flags, created_at')
-      .eq('user_id', userId)
       .order('created_at', { ascending: false })
       .limit(20);
+
+    if (userId && userId.trim() && userId !== 'all' && userId !== '*') {
+      query = query.eq('user_id', userId.trim());
+    }
+
+    const { data: logs, error } = await query;
 
     if (error) {
       console.error('Supabase audit logs fetch error:', error);

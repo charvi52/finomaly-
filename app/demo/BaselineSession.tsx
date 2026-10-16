@@ -88,6 +88,7 @@ export default function BaselineSession({ onComplete }: Props) {
   };
 
   const onKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (e.repeat) return;
     const { key } = e;
     if (IGNORED_KEYS.has(key)) {
       if (key === 'Backspace') setHasBackspace(true);

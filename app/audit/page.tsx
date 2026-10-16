@@ -18,6 +18,7 @@ interface AuditLogItem {
 
 export default function AuditPage() {
   const [userId, setUserId] = useState('');
+  const [filterMode, setFilterMode] = useState<'session' | 'all'>('session');
   const [logs, setLogs] = useState<AuditLogItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -28,13 +29,14 @@ export default function AuditPage() {
     fetchAuditLogs(currentId);
   }, []);
 
-  const fetchAuditLogs = useCallback(async (targetUserId: string) => {
-    if (!targetUserId.trim()) return;
+  const fetchAuditLogs = useCallback(async (targetUserId: string, mode: 'session' | 'all' = 'session') => {
     setLoading(true);
     setError(null);
 
+    const queryId = mode === 'all' ? 'all' : targetUserId.trim();
+
     try {
-      const res = await fetch(`/api/audit?userId=${encodeURIComponent(targetUserId.trim())}`, {
+      const res = await fetch(`/api/audit?userId=${encodeURIComponent(queryId || 'all')}`, {
         headers: {
           'x-api-key': process.env.NEXT_PUBLIC_DEMO_KEY || 'finomaly_demo_secret_2026_x8k9',
         },
@@ -119,25 +121,74 @@ export default function AuditPage() {
           </button>
         </div>
 
-        {/* User ID lookup bar */}
+        {/* User ID lookup bar & Filter mode toggle */}
         <div style={{ background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 12, padding: '1rem 1.25rem', marginBottom: '1.5rem' }}>
-          <label style={{ display: 'block', fontSize: '0.75rem', color: 'var(--muted-foreground)', fontFamily: 'JetBrains Mono, monospace', marginBottom: '0.5rem' }}>
-            SESSION USER ID (CRYPTO UUID)
-          </label>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.625rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+            <label style={{ fontSize: '0.75rem', color: 'var(--muted-foreground)', fontFamily: 'JetBrains Mono, monospace' }}>
+              TELEMETRY AUDIT SOURCE
+            </label>
+            <div style={{ display: 'flex', gap: '0.4rem' }}>
+              <button
+                type="button"
+                onClick={() => {
+                  setFilterMode('session');
+                  fetchAuditLogs(userId, 'session');
+                }}
+                style={{
+                  padding: '3px 10px',
+                  borderRadius: 6,
+                  border: filterMode === 'session' ? '1px solid #00f5d4' : '1px solid var(--border)',
+                  background: filterMode === 'session' ? 'rgba(0,245,212,0.1)' : 'transparent',
+                  color: filterMode === 'session' ? '#00f5d4' : 'var(--muted-foreground)',
+                  cursor: 'pointer',
+                  fontFamily: 'JetBrains Mono, monospace',
+                  fontSize: '0.72rem',
+                  fontWeight: 600,
+                  transition: 'all 0.2s',
+                }}
+              >
+                My Session
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setFilterMode('all');
+                  fetchAuditLogs('all', 'all');
+                }}
+                style={{
+                  padding: '3px 10px',
+                  borderRadius: 6,
+                  border: filterMode === 'all' ? '1px solid #00f5d4' : '1px solid var(--border)',
+                  background: filterMode === 'all' ? 'rgba(0,245,212,0.1)' : 'transparent',
+                  color: filterMode === 'all' ? '#00f5d4' : 'var(--muted-foreground)',
+                  cursor: 'pointer',
+                  fontFamily: 'JetBrains Mono, monospace',
+                  fontSize: '0.72rem',
+                  fontWeight: 600,
+                  transition: 'all 0.2s',
+                }}
+              >
+                All System Audits
+              </button>
+            </div>
+          </div>
+
           <div style={{ display: 'flex', gap: '0.5rem' }}>
             <input
               type="text"
-              value={userId}
+              value={filterMode === 'all' ? 'ALL_SYSTEM_AUDITS (Latest 20 across all demo sessions)' : userId}
+              disabled={filterMode === 'all'}
               onChange={e => setUserId(e.target.value)}
               placeholder="e.g. 550e8400-e29b-41d4-a716-446655440000"
               style={{
                 flex: 1, padding: '0.5rem 0.75rem', borderRadius: 8,
                 border: '1px solid var(--border)', background: 'var(--background)',
-                color: '#00f5d4', fontFamily: 'JetBrains Mono, monospace', fontSize: '0.85rem',
+                color: filterMode === 'all' ? 'var(--muted-foreground)' : '#00f5d4',
+                fontFamily: 'JetBrains Mono, monospace', fontSize: '0.85rem',
               }}
             />
             <button
-              onClick={() => fetchAuditLogs(userId)}
+              onClick={() => fetchAuditLogs(userId, filterMode)}
               style={{
                 padding: '0.5rem 1rem', borderRadius: 8,
                 border: '1px solid var(--border)', background: 'var(--secondary)',
@@ -164,7 +215,7 @@ export default function AuditPage() {
         <div style={{ background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 12, overflow: 'hidden' }}>
           <div style={{ padding: '1rem 1.25rem', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <span style={{ fontSize: '0.8rem', fontWeight: 600, fontFamily: 'JetBrains Mono, monospace', color: 'var(--muted-foreground)' }}>
-              LAST 20 VERIFICATION ATTEMPTS
+              {filterMode === 'all' ? 'LATEST 20 SYSTEM-WIDE VERIFICATION ATTEMPTS' : 'MY RECENT VERIFICATION ATTEMPTS'}
             </span>
             <span style={{ fontSize: '0.75rem', color: 'var(--muted-foreground)', fontFamily: 'JetBrains Mono, monospace' }}>
               {logs.length} RECORD{logs.length === 1 ? '' : 'S'}
@@ -177,8 +228,30 @@ export default function AuditPage() {
                 {loading ? 'Querying audit records from Supabase…' : 'No verification attempts logged yet for this session.'}
               </p>
               <p style={{ fontSize: '0.78rem', marginTop: '0.5rem' }}>
-                Complete an authentication session from the home page to record live audit telemetry.
+                Complete an authentication session from the home page, or switch to view all system audits.
               </p>
+              {filterMode === 'session' && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setFilterMode('all');
+                    fetchAuditLogs('all', 'all');
+                  }}
+                  style={{
+                    marginTop: '0.75rem',
+                    padding: '0.45rem 1rem',
+                    borderRadius: 6,
+                    border: '1px solid rgba(0,245,212,0.4)',
+                    background: 'rgba(0,245,212,0.08)',
+                    color: '#00f5d4',
+                    cursor: 'pointer',
+                    fontFamily: 'JetBrains Mono, monospace',
+                    fontSize: '0.75rem',
+                  }}
+                >
+                  View All Recent System Audits ↗
+                </button>
+              )}
             </div>
           ) : (
             <div style={{ overflowX: 'auto' }}>
