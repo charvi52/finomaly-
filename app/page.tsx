@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from 'react';
 import DemoModal from './demo/DemoModal';
 import ImposterChallengeModal from './demo/ImposterChallengeModal';
-import HowItWorksAnimation from './demo/HowItWorksAnimation';
 
 // ── Fingerprint logo SVG paths ────────────────────────────────────────────────
 const FP_PATHS = [
@@ -189,9 +188,6 @@ export default function Home() {
             <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 12 }}>
               <DemoModal />
               <ImposterChallengeModal />
-            </div>
-            <div>
-              <HowItWorksAnimation />
             </div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 20, fontSize: '0.875rem', color: 'var(--muted-foreground)' }}>
               {[

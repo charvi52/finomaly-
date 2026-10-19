@@ -120,3 +120,58 @@ button, a[role="button"] { border-radius: 999px !important; }
   .hero-title { font-size: clamp(3.15rem, 15vw, 5rem); }
   .hero-art { min-height: 360px; }
 }
+
+/* Product refinement: quiet, editorial, and operational rather than sci-fi. */
+.hud-overlay {
+  background: rgba(19, 24, 22, .72) !important;
+  backdrop-filter: blur(4px) !important;
+}
+.hud-panel {
+  border-radius: 10px !important;
+  border-color: #c9c3b8 !important;
+  box-shadow: 0 24px 70px rgba(19, 24, 22, .22) !important;
+}
+.hud-header {
+  padding: 1.1rem 1.35rem !important;
+  border-radius: 10px 10px 0 0 !important;
+}
+.hud-panel .status-dot,
+.hud-panel [style*="box-shadow"],
+.hud-panel [style*="text-shadow"] { box-shadow: none !important; }
+.hud-panel [style*="linear-gradient"],
+.hud-panel [style*="radial-gradient"] { background-image: none !important; }
+
+/* Make the simulation read like a verification workflow, not a game. */
+.hud-panel [style*="CAPTURING BEHAVIORAL TELEMETRY"] {
+  animation: none !important;
+  letter-spacing: .08em !important;
+}
+.hud-panel [style*="perspective"] > div {
+  border-radius: 6px !important;
+  box-shadow: 0 8px 0 #bdb7ac, inset 0 1px 0 rgba(255,255,255,.6) !important;
+  background: #e8e3d9 !important;
+  border-color: #c9c3b8 !important;
+}
+.hud-panel [style*="perspective"] [style*="width: 36px"] {
+  background: #f8f6f1 !important;
+  border-color: #d2ccc1 !important;
+  color: #5f665f !important;
+  box-shadow: 0 3px 0 #c3bdb2 !important;
+}
+
+/* Replace fluorescent telemetry with restrained status accents. */
+.hud-panel [style*="#00f5d4"],
+.hud-panel [style*="rgba(0, 245, 212"] { color: var(--primary) !important; border-color: rgba(23,107,85,.28) !important; background: rgba(23,107,85,.05) !important; }
+.hud-panel [style*="#ff4d4d"],
+.hud-panel [style*="#ff4d4d"] { color: var(--danger) !important; }
+
+/* The hero should introduce the product; the demo owns the interaction. */
+.hero-art .hero-scanline { animation: none !important; opacity: .25 !important; box-shadow: none !important; }
+.hero-art .signal-bars i { animation: none !important; }
+.scanner-assembly { display: none !important; }
+.scanner-overlay { gap: 1rem !important; justify-content: flex-start !important; padding-top: 32vh !important; }
+.scanner-overlay > span:first-child { position: static !important; transform: none !important; margin-bottom: 2.5rem !important; }
+.scanner-overlay .eyebrow { color: var(--primary) !important; }
+.scanner-overlay button { border-radius: 999px !important; background: transparent !important; color: var(--foreground) !important; }
+.scanner-ring, .scanner-ring.inner, .scanner-laser { animation: none !important; }
+.scanner-laser { opacity: .35 !important; box-shadow: none !important; }
