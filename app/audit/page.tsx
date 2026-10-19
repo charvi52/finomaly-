@@ -65,7 +65,7 @@ export default function AuditPage() {
         <span style={{
           padding: '3px 8px', borderRadius: 4,
           fontSize: '0.72rem', fontWeight: 600, fontFamily: 'JetBrains Mono, monospace',
-          background: 'rgba(0, 245, 212, 0.1)', color: '#00f5d4', border: '1px solid rgba(0, 245, 212, 0.3)'
+          background: 'rgba(0, 245, 212, 0.1)', color: '#176b55', border: '1px solid rgba(0, 245, 212, 0.3)'
         }}>
           MATCH
         </span>
@@ -86,7 +86,7 @@ export default function AuditPage() {
       <span style={{
         padding: '3px 8px', borderRadius: 4,
         fontSize: '0.72rem', fontWeight: 600, fontFamily: 'JetBrains Mono, monospace',
-        background: 'rgba(255, 68, 68, 0.1)', color: '#ff4444', border: '1px solid rgba(255, 68, 68, 0.3)'
+        background: 'rgba(255, 68, 68, 0.1)', color: '#b24a3b', border: '1px solid rgba(255, 68, 68, 0.3)'
       }}>
         ANOMALY
       </span>
@@ -94,7 +94,7 @@ export default function AuditPage() {
   };
 
   return (
-    <div style={{ minHeight: '100vh', background: '#080c0d', color: '#f0f4f5', padding: '2rem 1.5rem' }}>
+    <div className="audit-page" style={{ minHeight: '100vh', background: '#f4f1eb', color: '#1c211f', padding: '2rem 1.5rem' }}>
       <div style={{ maxWidth: 900, margin: '0 auto' }}>
         {/* Navigation header */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2rem', borderBottom: '1px solid var(--border)', paddingBottom: '1rem' }}>
@@ -104,7 +104,7 @@ export default function AuditPage() {
             </Link>
             <h1 style={{ fontSize: '1.5rem', fontWeight: 700, margin: '0.5rem 0 0', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               Verification Audit Log
-              <span style={{ fontSize: '0.75rem', padding: '2px 8px', borderRadius: 4, background: 'rgba(0,245,212,0.1)', color: '#00f5d4', border: '1px solid rgba(0,245,212,0.3)', fontFamily: 'JetBrains Mono, monospace' }}>
+              <span style={{ fontSize: '0.75rem', padding: '2px 8px', borderRadius: 4, background: 'rgba(0,245,212,0.1)', color: '#176b55', border: '1px solid rgba(0,245,212,0.3)', fontFamily: 'JetBrains Mono, monospace' }}>
                 IMMUTABLE
               </span>
             </h1>
@@ -114,7 +114,7 @@ export default function AuditPage() {
             style={{
               padding: '0.5rem 1rem', borderRadius: 8,
               border: '1px solid rgba(0,245,212,0.3)', background: 'rgba(0,245,212,0.08)',
-              color: '#00f5d4', cursor: 'pointer', fontFamily: 'JetBrains Mono, monospace', fontSize: '0.8rem',
+              color: '#176b55', cursor: 'pointer', fontFamily: 'JetBrains Mono, monospace', fontSize: '0.8rem',
             }}
           >
             {loading ? 'Refreshing…' : '↻ Refresh'}
@@ -137,9 +137,9 @@ export default function AuditPage() {
                 style={{
                   padding: '3px 10px',
                   borderRadius: 6,
-                  border: filterMode === 'session' ? '1px solid #00f5d4' : '1px solid var(--border)',
+                  border: filterMode === 'session' ? '1px solid #176b55' : '1px solid var(--border)',
                   background: filterMode === 'session' ? 'rgba(0,245,212,0.1)' : 'transparent',
-                  color: filterMode === 'session' ? '#00f5d4' : 'var(--muted-foreground)',
+                  color: filterMode === 'session' ? '#176b55' : 'var(--muted-foreground)',
                   cursor: 'pointer',
                   fontFamily: 'JetBrains Mono, monospace',
                   fontSize: '0.72rem',
@@ -158,9 +158,9 @@ export default function AuditPage() {
                 style={{
                   padding: '3px 10px',
                   borderRadius: 6,
-                  border: filterMode === 'all' ? '1px solid #00f5d4' : '1px solid var(--border)',
+                  border: filterMode === 'all' ? '1px solid #176b55' : '1px solid var(--border)',
                   background: filterMode === 'all' ? 'rgba(0,245,212,0.1)' : 'transparent',
-                  color: filterMode === 'all' ? '#00f5d4' : 'var(--muted-foreground)',
+                  color: filterMode === 'all' ? '#176b55' : 'var(--muted-foreground)',
                   cursor: 'pointer',
                   fontFamily: 'JetBrains Mono, monospace',
                   fontSize: '0.72rem',
@@ -183,7 +183,7 @@ export default function AuditPage() {
               style={{
                 flex: 1, padding: '0.5rem 0.75rem', borderRadius: 8,
                 border: '1px solid var(--border)', background: 'var(--background)',
-                color: filterMode === 'all' ? 'var(--muted-foreground)' : '#00f5d4',
+                color: filterMode === 'all' ? 'var(--muted-foreground)' : '#176b55',
                 fontFamily: 'JetBrains Mono, monospace', fontSize: '0.85rem',
               }}
             />
@@ -243,7 +243,7 @@ export default function AuditPage() {
                     borderRadius: 6,
                     border: '1px solid rgba(0,245,212,0.4)',
                     background: 'rgba(0,245,212,0.08)',
-                    color: '#00f5d4',
+                    color: '#176b55',
                     cursor: 'pointer',
                     fontFamily: 'JetBrains Mono, monospace',
                     fontSize: '0.75rem',

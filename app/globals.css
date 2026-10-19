@@ -1,15 +1,20 @@
-/* ── Reset & Base ─────────────────────────────────────────────── */
+/* Finomaly design system: quiet confidence, precise data, human warmth. */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --background: #080c0d;
-  --foreground: #f0f4f5;
-  --card: #0d1517;
-  --border: #1a2628;
-  --primary: #00f5d4;
-  --muted-foreground: #6b7e83;
-  --font-mono: 'JetBrains Mono', monospace;
-  --font-sans: 'Space Grotesk', sans-serif;
+  --background: #f4f1eb;
+  --foreground: #1c211f;
+  --card: #fbfaf7;
+  --card-muted: #ebe7df;
+  --border: #d8d3ca;
+  --primary: #176b55;
+  --primary-foreground: #f8faf7;
+  --accent: #d77b45;
+  --danger: #b24a3b;
+  --muted-foreground: #6f756f;
+  --font-mono: 'IBM Plex Mono', monospace;
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-display: 'DM Serif Display', Georgia, serif;
 }
 
 html { scroll-behavior: smooth; }
@@ -19,6 +24,7 @@ body {
   color: var(--foreground);
   font-family: var(--font-sans);
   line-height: 1.5;
+  letter-spacing: -0.01em;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -41,16 +47,18 @@ body {
 }
 
 .hero-title {
-  font-size: clamp(2.8rem, 6vw, 5rem);
-  font-weight: 700;
-  letter-spacing: -0.04em;
+  font-family: var(--font-display);
+  font-size: clamp(3.3rem, 7vw, 6.4rem);
+  font-weight: 400;
+  letter-spacing: -0.045em;
   line-height: 0.95;
   margin: 0;
 }
 
 .section-title {
-  font-size: clamp(1.8rem, 3.5vw, 2.8rem);
-  font-weight: 700;
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 3.5vw, 3rem);
+  font-weight: 400;
   letter-spacing: -0.03em;
   line-height: 1.1;
   margin: 0;
@@ -63,8 +71,8 @@ body {
   height: 8px;
   border-radius: 50%;
   background: var(--primary);
-  box-shadow: 0 0 8px var(--primary);
-  animation: pulse 2s infinite;
+  box-shadow: none;
+  animation: none;
 }
 
 @keyframes pulse {
@@ -76,17 +84,17 @@ body {
 .tech-card {
   background: var(--card);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 4px;
   transition: border-color 0.2s;
 }
-.tech-card:hover { border-color: rgba(0,245,212,0.3); }
+.tech-card:hover { border-color: var(--primary); transform: translateY(-2px); }
 
 /* ── Hero art & Biometric Scanner ────────────────────────────── */
 .hero-art {
   position: relative;
   border-radius: 20px;
   overflow: hidden;
-  background: radial-gradient(ellipse at 50% 50%, rgba(0, 245, 212, 0.09) 0%, #080c0d 75%);
+  background: var(--card-muted);
   border: 1px solid var(--border);
   aspect-ratio: 1;
   max-height: 520px;
@@ -121,8 +129,8 @@ body {
   mix-blend-mode: screen;
   mask-image: radial-gradient(ellipse at center, #000 55%, transparent 76%);
   -webkit-mask-image: radial-gradient(ellipse at center, #000 55%, transparent 76%);
-  filter: drop-shadow(0 0 45px rgba(0, 245, 212, 0.4));
-  animation: fp-breathe 4.5s ease-in-out infinite;
+  filter: none;
+  animation: none;
   z-index: 2;
   position: relative;
 }
@@ -178,10 +186,11 @@ body {
 .scan-bracket.br { bottom: 84px; right: 22px; border-right: 2px solid rgba(0, 245, 212, 0.55); border-bottom: 2px solid rgba(0, 245, 212, 0.55); }
 
 .signal-panel {
-  background: rgba(13, 21, 23, 0.88);
-  border: 1px solid rgba(0, 245, 212, 0.2);
-  border-radius: 10px;
-  backdrop-filter: blur(10px);
+  background: rgba(251, 250, 247, 0.96);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  backdrop-filter: none;
+  color: var(--foreground);
 }
 
 /* ── Signal bars (hero panel) ─────────────────────────────────── */
@@ -434,6 +443,12 @@ body {
   stroke-linecap: round;
   transition: stroke-dashoffset 0.8s cubic-bezier(0.4,0,0.2,1), stroke 0.4s;
 }
+
+.audit-page {
+  background: var(--background) !important;
+  color: var(--foreground) !important;
+}
+.audit-page h1, .audit-page h2, .audit-page h3 { font-family: var(--font-display); font-weight: 400; letter-spacing: -0.02em; }
 
 /* ── Responsive ───────────────────────────────────────────────── */
 @media (max-width: 768px) {
