@@ -1,14 +1,14 @@
 /* Mercury-inspired visual direction: editorial fintech, restrained surfaces, clear conversion hierarchy. */
 :root {
-  --background: #0d1018;
-  --foreground: #f5f4f1;
-  --card: #171b26;
-  --card-muted: #202637;
-  --border: rgba(255,255,255,.14);
-  --primary: #8fa8ff;
-  --primary-foreground: #111522;
-  --accent: #c8b9ff;
-  --muted-foreground: #b2b4bf;
+  --background: #07141b;
+  --foreground: #f5f7f4;
+  --card: #0d2028;
+  --card-muted: #122a33;
+  --border: rgba(177, 213, 215, .22);
+  --primary: #00e5d0;
+  --primary-foreground: #06161b;
+  --accent: #ff6b35;
+  --muted-foreground: #a9bdc1;
   --font-sans: Inter, ui-sans-serif, system-ui, sans-serif;
   --font-display: Inter, ui-sans-serif, system-ui, sans-serif;
 }
@@ -75,6 +75,38 @@ main > section:first-of-type > div:first-child > div:last-child { justify-conten
 section[style*="background: var(--card)"] { background: #141923 !important; }
 
 button, a[role="button"] { border-radius: 999px !important; }
+
+.hero-action {
+  min-height: 48px !important;
+  padding: 0.72rem 1.35rem !important;
+  letter-spacing: -0.01em !important;
+  box-shadow: none !important;
+  transition: background-color .2s ease, border-color .2s ease, transform .2s ease !important;
+}
+.hero-action:hover { transform: translateY(-1px); }
+.hero-action-primary {
+  background: rgba(0, 229, 208, .08) !important;
+  border-color: rgba(0, 229, 208, .75) !important;
+  color: #00e5d0 !important;
+}
+.hero-action-primary:hover { background: rgba(0, 229, 208, .16) !important; }
+.hero-action-challenge {
+  background: rgba(255, 107, 53, .08) !important;
+  border-color: rgba(255, 107, 53, .7) !important;
+  color: #ff7b4c !important;
+}
+.hero-action-challenge:hover { background: rgba(255, 107, 53, .16) !important; }
+.how-it-works-action {
+  min-height: 66px !important;
+  padding: .9rem 1.8rem !important;
+  background: rgba(0, 229, 208, .08) !important;
+  border: 1px solid rgba(0, 229, 208, .7) !important;
+  color: #f5f7f4 !important;
+  box-shadow: none !important;
+  text-align: left !important;
+}
+.how-it-works-action:hover { background: rgba(0, 229, 208, .15) !important; transform: translateY(-1px); }
+
 .typing-input, .login-input { background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.2); border-radius: 999px; }
 .typing-input:focus, .login-input:focus { border-color: var(--primary); }
 .progress-bar-track, .feature-bar-track { background: rgba(255,255,255,.14); }

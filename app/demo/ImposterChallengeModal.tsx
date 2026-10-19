@@ -71,6 +71,7 @@ export default function ImposterChallengeModal() {
   return (
     <>
       <button
+        className="hero-action hero-action-challenge"
         onClick={() => setOpen(true)}
         style={{
           display: 'inline-flex', alignItems: 'center', gap: '0.5rem',

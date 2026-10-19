@@ -93,6 +93,7 @@ export default function DemoModal() {
     <>
       {/* Launch button */}
       <button
+        className="hero-action hero-action-primary"
         onClick={() => setOpen(true)}
         style={{
           display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
