@@ -1,0 +1,94 @@
+/* Mercury-inspired visual direction: editorial fintech, restrained surfaces, clear conversion hierarchy. */
+:root {
+  --background: #0d1018;
+  --foreground: #f5f4f1;
+  --card: #171b26;
+  --card-muted: #202637;
+  --border: rgba(255,255,255,.14);
+  --primary: #8fa8ff;
+  --primary-foreground: #111522;
+  --accent: #c8b9ff;
+  --muted-foreground: #b2b4bf;
+  --font-sans: Inter, ui-sans-serif, system-ui, sans-serif;
+  --font-display: Inter, ui-sans-serif, system-ui, sans-serif;
+}
+
+body { background: var(--background); color: var(--foreground); letter-spacing: -.02em; }
+.shell { max-width: 1240px; }
+
+header {
+  border-bottom: 1px solid rgba(255,255,255,.12) !important;
+  background: rgba(13,16,24,.78) !important;
+  backdrop-filter: blur(18px) !important;
+}
+header .shell { height: 76px !important; }
+header nav a { color: rgba(245,244,241,.72) !important; }
+header nav a:hover { color: #fff !important; }
+header nav a[href="/audit"] { border-color: rgba(143,168,255,.42) !important; background: rgba(143,168,255,.1) !important; color: #d9e1ff !important; }
+
+.hero-title { font-family: var(--font-display); font-size: clamp(3.2rem, 7vw, 6.6rem); font-weight: 500; letter-spacing: -.075em; line-height: .95; }
+.section-title { font-family: var(--font-display); font-weight: 500; letter-spacing: -.055em; }
+.eyebrow { color: #c8b9ff; letter-spacing: .14em; }
+
+main > section:first-of-type {
+  position: relative;
+  min-height: 610px;
+  grid-template-columns: 1fr !important;
+  justify-items: center;
+  text-align: center;
+  padding-top: 7rem !important;
+  padding-bottom: 5rem !important;
+  overflow: hidden;
+}
+main > section:first-of-type::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 15%, rgba(105,120,196,.34), transparent 50%), linear-gradient(180deg, rgba(13,16,24,.15), var(--background) 92%);
+  pointer-events: none;
+}
+main > section:first-of-type > div:first-child { position: relative; z-index: 2; align-items: center; max-width: 760px; }
+main > section:first-of-type > div:first-child p { max-width: 520px !important; }
+main > section:first-of-type > div:first-child > div:nth-of-type(2) { justify-content: center; }
+main > section:first-of-type > div:first-child > div:last-child { justify-content: center; }
+
+.hero-art {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  width: 100%;
+  max-height: none;
+  min-height: 0;
+  aspect-ratio: auto;
+  border: 0;
+  border-radius: 0;
+  background: #171d2b;
+  opacity: .42;
+}
+.hero-art::before { opacity: .12; }
+.fingerprint-art { max-width: 680px; opacity: .82; }
+.hero-scanline, .scan-bracket, .signal-panel, .hero-art > div[style*="IDENTITY"] { opacity: .7; }
+.signal-panel { background: rgba(22,27,39,.88); border-color: rgba(255,255,255,.18); color: var(--foreground); }
+
+.tech-card, .hud-panel, .math-block { background: #171b26; border-color: rgba(255,255,255,.14); border-radius: 10px; }
+.tech-card:hover { border-color: rgba(143,168,255,.68); transform: translateY(-2px); }
+section[style*="background: var(--card)"] { background: #141923 !important; }
+
+button, a[role="button"] { border-radius: 999px !important; }
+.typing-input, .login-input { background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.2); border-radius: 999px; }
+.typing-input:focus, .login-input:focus { border-color: var(--primary); }
+.progress-bar-track, .feature-bar-track { background: rgba(255,255,255,.14); }
+.progress-bar-fill { background: var(--primary); }
+
+.scanner-overlay { background: #0d1018; }
+.scanner-ring { border-color: rgba(143,168,255,.35); }
+.scanner-ring.inner { border-color: rgba(200,185,255,.2); }
+.scanner-laser { background: linear-gradient(90deg, transparent, var(--primary), transparent); }
+
+@media (max-width: 768px) {
+  header nav { display: none !important; }
+  header .shell { height: 68px !important; }
+  main > section:first-of-type { min-height: 650px; padding-top: 5rem !important; }
+  .hero-title { font-size: clamp(3.1rem, 15vw, 5rem); }
+  .hero-art { opacity: .28; }
+}

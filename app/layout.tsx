@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import './mercury-reference.css';
 
 export const metadata: Metadata = {
   title: 'Finomaly — Identity, made continuous',
